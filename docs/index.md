@@ -1,3 +1,6 @@
+# What Goes Into A Word: Generating Image Descriptions With Top-Down Spatial Knowledge
+**Authors:** *Mehdi Ghanimifard and Simon Dobnik*
+
 ### Abstract
 
 Generating grounded image descriptions requires associating linguistic units with their corresponding visual clues.
@@ -12,5 +15,28 @@ The aim of this paper is to evaluate what representations facilitate generating 
 In particular, we investigate the contribution of four different representational modalities in generating relational referring expressions:
 (i) (pre-trained) convolutional visual features, (ii) spatial attention over visual features, (iii) top-down geometric relational knowledge between objects, and (iv) world knowledge captured by contextual embeddings in language models.
 
-- Evaluations
-- Live demo (based on mobilenet)
+
+### Codes
+- Training
+- Reproduce the evaluations
+- Generate the reports with visualisations
+
+### Demo
+- Browser based demo
+
+### Cite
+```
+@inproceedings{ghanimifard-dobnik-2019-what,
+    title = "What Goes Into A Word: Generating Image Descriptions With Top-Down Spatial Knowledge",
+    author = "Ghanimifard, Mehdi. and
+      Dobnik, Simon",
+    booktitle = "",
+    month = oct,
+    year = "2019",
+    address = "",
+    publisher = "",
+    url = "",
+    doi = "",
+    pages = "",
+}
+```
