@@ -4,7 +4,7 @@
 ### Abstract
 
 Generating grounded image descriptions requires associating linguistic units with their corresponding visual clues.
-A common method is to train a decoder language model with attention mechanism over convolutional visual features. % when generating descriptions.
+A common method is to train a decoder language model with attention mechanism over convolutional visual features. 
 Attention weights align 
 the stratified visual features 
 arranged by their location with tokens, most commonly words, in the target description.
