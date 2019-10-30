@@ -1,0 +1,339 @@
+<html>
+<head>
+  <link rel="stylesheet" media="all" href="style.css">
+  <link rel="icon" href="favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
+  <script>
+    /**
+    // ||||||||||||||||||||||||||||||| \\
+    //	Global Object $: Generic controls
+    // ||||||||||||||||||||||||||||||| \\
+    **/
+    (function(){
+      // http://stackoverflow.com/questions/4083351/what-does-jquery-fn-mean
+      var $ = function( elem ){
+        if (!(this instanceof $)){
+          return new $(elem);
+        }
+        this.el = document.getElementById( elem );
+      };
+      window.$ = $;
+      $.prototype = {
+        onChange : function( callback ){
+          this.el.addEventListener('change', callback );
+          return this;
+        }
+      };
+    })();
+  </script>
+  <script src="upload.js"></script>
+
+  <title>Describe objects and relations (browser demo)</title>
+</head>
+<body>
+  <section id="loading_page" class="page">
+    <h1>Describe objects and relations</h1>
+    <div style="display: table; width: 100%; margin: auto; padding: 15px">
+      <p style="text-align: left;">
+        This is a browser based demo for generating image descrptions using a recurrent language model.
+        The goal is to describe two objects and their relations.
+        You need to choose an image from your local machine, and draw two bounding boxes to describe
+        your intended objects, then the system is going to generate word sequences based on
+        <span style="color: green">the bounding box arrangements</span>,
+        the visual features in <span style="color: red">object1</span>/<span style="color: blue">object2</span>,
+        and <span style="color: grey">the contextual embeddings</span> in the neural language model.
+      </p>
+      <br />
+      <h3>Requirements</h3>
+      <p style="text-align: left;">
+        The model approximately is 60 MB.
+        This application runs localy on your browser.
+        You need Google Chrome to be able to proceed.
+        There is no backend service (no image will be uploaded).
+      </p>
+    </div>
+    <div id="status"></div>
+  </section>
+
+  <section id="upload_page" class="page">
+    <h3>How to use it</h3>
+    <p style="text-align: left;">
+      1. Choose a photo.<br />
+      2. Draw bounding box for <span style="color: red">object1</span>.<br />
+      3. Draw bounding box for <span style="color: blue">object2</span>.<br />
+      4. Repeat 2 and 3 until you are happy with bounding boxes.<br />
+      5. Click on <em>Generate</em> button.<br />
+    </p>
+    <br />
+    <div id="userImage">
+      <p>Drag &amp; Drop Image</p>
+      <input type="file" id="fileUpload" />
+    </div>
+    <h4>Few quick examples</h4>
+    <p style="text-align: left;">
+      <a href="#" onclick="image.src='examples/bagpiper.png';">
+       <img width="30" src="examples/bagpiper.png" />
+       describe the man and his jacket
+      </a><br />
+      <a href="#" onclick="image.src='examples/farm_kitchen.jpg';">
+       <img width="30" src="examples/farm_kitchen.jpg" />
+       describe the candle and the apple
+      </a><br />
+      <a href="#" onclick="image.src='examples/musician_indian.jpg';">
+       <img width="30" src="examples/musician_indian.jpg" />
+       describe the suit case on the street
+      </a><br />
+      <a href="#" onclick="image.src='examples/simple-flowers.jpg';">
+       <img width="30" src="examples/simple-flowers.jpg" />
+       describe the vase on the table
+      </a><br />
+    </p>
+  </section>
+
+  <section id="select_page" class="page">
+    <div style="display: none; width:226px; position: absolute; left:0px; top:70px;">
+      <canvas id="canvas" width="224"></canvas>
+      <div style="display: none;"><canvas id="canvas0" width="224"  height="224"></canvas></div>
+    </div>
+    <div style="display: none; width:234px; height:464px; position: absolute; left:246px; top:0px;">
+      <div id="object1" style="display: none;">
+        <canvas id="canvas1" width="224" height="224"></canvas>
+      </div>
+      <div id="object2" style="display: none;">
+        <canvas id="canvas2" width="224" height="224"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section id="result_page" class="page">
+    <div style="width:226px; position: absolute; left: 0px; top:0px; border: 2px grey;">
+      <canvas id="canvas-copy"></canvas>
+    </div>
+    <div style="width:100px; position: absolute; left: 0px; top: 290px; border: 2px red;">
+      <canvas id="canvas-copy1"></canvas>
+    </div>
+    <div style="width:100px; position: absolute; left: 110px; top: 290px; border: 2px blue;">
+      <canvas id="canvas-copy2"></canvas>
+    </div>
+    <div style="width:226px; height:45px; position: absolute; left: 0px; top: 402px; ">
+      <div style="width:226px; height:20px; border: 2px green; background-color: green; font-size: 8pt; padding: 5px; overflow: overflow-wrap; ">
+        <span style="color: white">Bboxes: locations, dimensions, areas, and overlaps</span>
+      </div>
+      <div style="width:226px; height:20px; margine 5px 0; border: 2px grey; background-color: grey; font-size: 8pt; padding: 5px; overflow: overflow-wrap; ">
+        <span style="color: white">Contextual embedding (recurrent state)</span>
+      </div>
+    </div>
+    <div style="width:300px; position: absolute; right: 0px; top:0px; font-size:8pt">
+      <div id="predictions">Processing ...</div>
+    </div>
+  </section>
+
+  <section id="about_page" class="page">
+      <h3>About the demo</h3>
+      <p style="text-align: left;">
+        For the convenience of the online demo, we used <a href="https://keras.io/applications/#mobilenetv2">a pre-trained mobilenet</a> to extract visual features.
+        In addition to convolutional features, the bouning box arrangements are encoded as a <span style="color: green">vector of spatial features</span>.
+        Vectorisation of the spatial relation between bounding boxes is based on the method in <a href="https://viske.cs.washington.edu/paper/fsadeghi_VisKE_ext.pdf">Sadeghi et al. (2015)</a>.
+        The neural networks in this demo all are built on python <a href="https://keras.io/">Keras</a>, then ported for <a href="https://js.tensorflow.org/">Tensorflow.js</a>.
+        The model is trained on 100K images from <a href="http://visualgenome.org">VisualGenome's relatinoships dataset</a>
+        with average 15 descrptions per image for 5 epochs with 80 batches.
+      </p>
+      <p style="text-align: left;">
+        The attention model is used to describe the grounding of each token in 4 possible features. <a href="https://www.inlg2019.com/assets/papers/143_Paper.pdf">Ghanimifard and Dobnik (2019)</a>.
+      </p>
+  </section>
+
+  <div id="pagination" class="pagination">
+    <button type="button" id="back_btn" class="back_page_btn back">Back</button>
+    <button type="button" id="goto_select_btn" class="next_page_btn">Next</button>
+    <button type="button" id="goto_upload_btn" class="next_page_btn">Start</button>
+    <button type="button" id="generate_btn" class="next_page_btn">Generate</button>
+    <button type="button" id="goto_about_btn" class="next_page_btn">About</button>
+  </div>
+
+  <script type="module" src="index.js"></script>
+  <script>
+    const pages = [
+      "loading_page",
+      "upload_page",
+      "select_page",
+      "result_page",
+      "about_page",
+    ];
+
+    var curr_page = 0;
+    function next_page() {
+      if (curr_page + 1 < pages.length) {
+        curr_page += 1;
+        pages.forEach((page_el, page_num) => {
+          if (page_num == curr_page) {
+            $(page_el).el.style.display = "block";
+          } else {
+            $(page_el).el.style.display = "none";
+          }
+        });
+        for (let i=0; i < $("pagination").el.children.length ; i++) {
+          $("pagination").el.children[i].style.display = "none";
+        };
+        if (curr_page > 1) {
+          $("back_btn").el.style.display = "inline-block";
+        }
+      } else {
+        reset_page();
+        // ignore nonsense
+      }
+    }
+    function prev_page() {
+      if (curr_page - 1 > 0) {
+        curr_page -= 1;
+        pages.forEach((page_el, page_num) => {
+          if (page_num == curr_page) {
+            $(page_el).el.style.display = "block";
+          } else {
+            $(page_el).el.style.display = "none";
+          }
+        });
+        for (let i=0; i < $("pagination").el.children.length ; i++) {
+          $("pagination").el.children[i].style.display = "none";
+        };
+        if (curr_page > 1) {
+          $("back_btn").el.style.display = "inline-block";
+        }
+      } else {
+        // ignore nonsense
+      }
+    }
+    function reset_page() {
+      curr_page = -1;
+      next_page();
+    }
+
+    // This code is highly influenced from:
+    // 1. https://codepen.io/doughensel/pen/zGMmop
+    // 2. https://jsfiddle.net/richardcwc/ukqhf54k/
+    //
+    /**
+    // ||||||||||||||||||||||||||||||| \\
+    //	Drag and Drop code for Upload
+    // ||||||||||||||||||||||||||||||| \\
+    **/
+    var dragdrop = {
+      init : function( elem ){
+        elem.setAttribute('ondrop', 'dragdrop.drop(event)');
+        elem.setAttribute('ondragover', 'dragdrop.drag(event)' );
+      },
+      drop : function(e){
+        e.preventDefault();
+        var file = e.dataTransfer.files[0];
+        runUpload( file );
+      },
+      drag : function(e){
+        e.preventDefault();
+      }
+    };
+
+    /**
+    // ||||||||||||||||||||||||||||||| \\
+    //	Code to capture a file (image)
+    //  and upload it to the browser
+    // ||||||||||||||||||||||||||||||| \\
+    **/
+    function runUpload( file ) {
+      // http://stackoverflow.com/questions/12570834/how-to-preview-image-get-file-size-image-height-and-width-before-upload
+      if ( file.type === 'image/png' || file.type === 'image/jpg' || file.type === 'image/jpeg' || file.type === 'image/gif' || file.type === 'image/bmp' ){
+        var reader = new FileReader();
+        reader.readAsDataURL( file );
+        reader.onload = (_file) => { image.src = _file.target.result };
+      } // END test if file.type === image
+    }
+    /**
+    // ||||||||||||||||||||||||||||||| \\
+    //	window.onload fun
+    // ||||||||||||||||||||||||||||||| \\
+    **/
+    window.onload = function(){
+      if( window.FileReader ){
+        // Connect the DIV surrounding the file upload to HTML5 drag and drop calls
+        dragdrop.init( $('userImage').el );
+        //	Bind the input[type="file"] to the function runUpload()
+        $('fileUpload').onChange(function(){
+          runUpload( this.files[0] );
+        });
+        // Pagination
+        let nextButtons = document.getElementsByClassName('next_page_btn');
+        let backButtons = document.getElementsByClassName('back_page_btn');
+        for(let i = 0; i < nextButtons.length; i++) {
+          nextButtons[i].addEventListener('click', next_page );
+        };
+
+        for(let i = 0; i < backButtons.length; i++) {
+          backButtons[i].addEventListener('click', prev_page );
+        };
+
+      } else {
+        // Report error message if FileReader is unavilable
+        var p   = document.createElement( 'p' ),
+            msg = document.createTextNode( 'Sorry, your browser does not support FileReader.' );
+        p.className = 'error';
+        p.appendChild( msg );
+        $('userImage').el.innerHTML = '';
+        $('userImage').el.appendChild( p );
+      }
+
+      // Bounding box selector:
+      //Mousedown
+      $('canvas').el.addEventListener('mousedown', function(e) {
+        last_mousex = parseInt(e.clientX-canvasx);
+        last_mousey = parseInt(e.clientY-canvasy);
+        mousedown = true;
+      }, false);
+
+      //Mouseup
+      $('canvas').el.addEventListener('mouseup', function(e) {
+        let width = mousex-last_mousex;
+        let height = mousey-last_mousey;
+
+        if (objs.length >= 2) {
+          objs = [];
+          objsConvas.forEach(function(el){
+             el.parentElement.style.display = "none";
+          })
+          $('generate_btn').el.style.display = "none";
+        }
+        objs.push([last_mousex,last_mousey,width,height]);
+        //Variables
+        mousedown = false;
+        refreshConvas(image, objs, objsConvas);
+        if (objs.length == 2) {
+          $('generate_btn').el.style.display = "inline-block";
+          let ctx0 = $('canvas0').el.getContext('2d');
+          ctx0.clearRect(0,0,$('canvas0').el.width,$('canvas0').el.height);
+          ctx0.drawImage(image, 0, 0, image.width, image.height, 0, 0, IMG_SIZE, IMG_SIZE);
+          refreshConvas(image, objs, [$('canvas-copy1').el, $('canvas-copy2').el], 'canvas-copy', 100);
+
+        }
+      }, false);
+
+      //Mousemove
+      $('canvas').el.addEventListener("mousemove", function(e) {
+        mousex = parseInt(e.clientX-canvasx);
+        mousey = parseInt(e.clientY-canvasy);
+        if(mousedown) {
+          let ctx = $('canvas').el.getContext('2d');
+          ctx.clearRect(0,0,canvas.width,canvas.height); //clear canvas
+          ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, dw, dh);
+          ctx.beginPath();
+          let width = mousex-last_mousex;
+          let height = mousey-last_mousey;
+          ctx.rect(last_mousex,last_mousey,width,height);
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 10;
+          ctx.stroke();
+        }
+      }, false);
+
+    };
+
+  </script>
+</body>
+</html>

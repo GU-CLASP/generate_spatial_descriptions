@@ -1,0 +1,147 @@
+*{ margin: 0; padding: 0; }
+html, body {
+	padding: 15px;
+	font-family: Inter, X-LocaleSpecific, "Firefox Sans", Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+	font-size: 12pt;
+	margin: 0;
+	height: 100%;
+	overflow: hidden;
+}
+h3 {
+	margin: 10px 0;
+}
+.error{ color: #B71C1C; }
+#canvas, #canvas-copy {
+    cursor: crosshair;
+    border: 2px solid grey;
+}
+#canvas1, #canvas-copy1 {
+    border: 2px solid red;
+}
+#canvas2, #canvas-copy2 {
+    border: 2px solid blue;
+}
+.page {
+	margin: auto;
+	display: none;
+	width: 600px;
+	height: 100%;
+	position: relative;
+}
+.pagination {
+	position: absolute;
+	height: 60px;
+	width: 400px;
+	bottom: 0px;
+	left: 0px;
+	padding: 20px 20px 0 20px;
+}
+#goto_upload_btn, #goto_select_btn, #generate_btn, #goto_about_btn, #back_btn {
+	display: none;
+}
+.page#loading_page {
+	text-align: center;
+	display: block;
+}
+.page#upload_page {
+	text-align: center;
+}
+#userImage {
+	height: 35px;
+	width: 500px;
+	vertical-align: middle;
+	text-align: center;
+	color: #37474F;
+	background-color: #FFFFFF;
+	border: dotted 2px #333333;
+	border-radius: 10px;
+	margin: auto;
+        padding: 50px;
+}
+#userImage input{
+	width: 150px;
+	margin: auto;
+}
+#object1, #object2 {
+	height: 230px;
+	width: 230px;
+	padding: 2px;
+}
+/* General Buttons */
+button {
+  width: 130px;
+  height: 40px;
+  background: linear-gradient(to bottom, #4eb5e5 0%,#389ed5 100%); /* W3C */
+  border: none;
+  border-radius: 5px;
+  position: relative;
+  border-bottom: 4px solid #2b8bc6;
+  color: #fbfbfb;
+  font-weight: 600;
+  font-family: 'Open Sans', sans-serif;
+  text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+  font-size: 15px;
+  text-align: left;
+  text-indent: 5px;
+  box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+  cursor: pointer;
+
+/* Just for presentation */
+  display: inline-block;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+button:active {
+  box-shadow: 0px 2px 0px 0px rgba(0,0,0,.2);
+  top: 1px;
+}
+
+button:after {
+  content: "";
+  width: 0;
+  height: 0;
+  display: block;
+  border-top: 20px solid #187dbc;
+  border-bottom: 20px solid #187dbc;
+  border-left: 16px solid transparent;
+  border-right: 20px solid #187dbc;
+  position: absolute;
+  opacity: 0.6;
+  right: 0;
+  top: 0;
+  border-radius: 0 5px 5px 0;
+}
+
+/* Button pointing left */
+
+button.back {
+  text-align: right;
+  padding-right: 12px;
+  box-sizing: border-box;
+}
+button.back:after {
+  content: "";
+  width: 0;
+  height: 0;
+  display: block;
+  border-top: 20px solid #187dbc;
+  border-bottom: 20px solid #187dbc;
+  border-right: 16px solid transparent;
+  border-left: 20px solid #187dbc;
+  position: absolute;
+  opacity: 0.6;
+  left: 0;
+  top: 0;
+  border-radius: 5px 0 0 5px;
+}
+
+/* Single buttons */
+
+button.site {
+  width: 40px;
+  text-align: center;
+  text-indent: 0;
+}
+button.site:after{
+  display: none;
+}
