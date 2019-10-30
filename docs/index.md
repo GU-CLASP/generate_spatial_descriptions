@@ -30,8 +30,5 @@ In particular, we investigate the contribution of four different representationa
     year = "2019",
     address = "Tokyo, Japan",
     publisher = "Association for Computational Linguistics",
-    url = "",
-    doi = "",
-    pages = "",
 }
 ```
