@@ -17,9 +17,9 @@ In particular, we investigate the contribution of four different representationa
 
 
 [[Paper](https://www.inlg2019.com/assets/papers/143_Paper.pdf)]
-[[Slides](https://gu-clasp.github.io/generate_spatial_descriptions/presentation.pdf)]
+[[Slides](presentation.pdf)]
 [[Codes](https://github.com/GU-CLASP/generate_spatial_descriptions/tree/master/codes)]
-[[Demo](https://gu-clasp.github.io/generate_spatial_descriptions/demo/)]
+[[Demo](demo/)]
 
 ```
 @inproceedings{ghanimifard-dobnik-2019-what,
