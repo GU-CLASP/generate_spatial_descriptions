@@ -16,7 +16,8 @@ In particular, we investigate the contribution of four different representationa
 (i) (pre-trained) convolutional visual features, (ii) spatial attention over visual features, (iii) top-down geometric relational knowledge between objects, and (iv) world knowledge captured by contextual embeddings in language models.
 
 
-[[Paper](https://www.inlg2019.com/assets/papers/143_Paper.pdf)] 
+[[Paper](https://www.inlg2019.com/assets/papers/143_Paper.pdf)]
+[[Slides](https://gu-clasp.github.io/generate_spatial_descriptions/presentation.pdf)]
 [[Codes](https://github.com/GU-CLASP/generate_spatial_descriptions/tree/master/codes)]
 [[Demo](https://gu-clasp.github.io/generate_spatial_descriptions/demo/)]
 
@@ -29,5 +30,8 @@ In particular, we investigate the contribution of four different representationa
     year = "2019",
     address = "Tokyo, Japan",
     publisher = "Association for Computational Linguistics",
+    url = "",
+    doi = "",
+    pages = "",
 }
 ```
