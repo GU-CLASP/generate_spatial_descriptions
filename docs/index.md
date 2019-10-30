@@ -23,7 +23,7 @@ In particular, we investigate the contribution of four different representationa
 ```
 @inproceedings{ghanimifard-dobnik-2019-what,
     title = "What Goes Into A Word: Generating Image Descriptions With Top-Down Spatial Knowledge",
-    author = "Ghanimifard, Mehdi. and Dobnik, Simon",
+    author = "Ghanimifard, Mehdi and Dobnik, Simon",
     booktitle = "Proceedings of the 12th International Conference on Natural Language Generation (INLG-2019)",
     month = "Oct",
     year = "2019",
